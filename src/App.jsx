@@ -7,6 +7,7 @@ import HomePage from './pages/HomePage';
 import CreatePostPage from './pages/CreatePostPage';
 import PostDetailPage from './pages/PostDetail';
 import EditPostPage from './pages/EditPostPage';
+import CommentSection from './components/CommentSection';
 
 import NavBar from './components/NavBar.jsx';
 import ProtectedRoute from './components/ProtectedRoute';
@@ -26,6 +27,7 @@ function App() {
             <Route path="/posts/new" element={<CreatePostPage />} />
             <Route path="/posts/:postId" element={<PostDetailPage />} />
             <Route path="/posts/:postId/edit" element={<EditPostPage />} />
+            <Route path="/posts/:postId/comments" element={<CommentSection />} />
           </Route>
         </Route>
       </Routes>

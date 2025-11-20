@@ -1,14 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
-import { getPost, deletePost } from '../services/apiService.js';
-import { useAuth } from '../context/authlogin.jsx';
-import { useToast } from '../context/toast.jsx';
+import { getPost, deletePost } from '/src/services/apiService.js';
+import { useAuth } from '/src/context/authlogin.jsx';
+import { useToast } from '/src/context/toast';
 
+// Componentes PrimeReact
 import { Card } from 'primereact/card';
 import { Button } from 'primereact/button';
 import { ProgressSpinner } from 'primereact/progressspinner';
 import { Message } from 'primereact/message';
 import { confirmDialog } from 'primereact/confirmdialog';
+import CommentsSection from '../components/CommentSection'; 
 
 const PostDetailPage = () => {
     const [post, setPost] = useState(null);
@@ -38,19 +40,16 @@ const PostDetailPage = () => {
 
     const handleDelete = () => {
         confirmDialog({
-            message: '¿Estás seguro de que quieres eliminar este post? Esta acción es irreversible.',
+            message: '¿Estás seguro de que quieres eliminar este post?',
             header: 'Confirmar Eliminación',
             icon: 'pi pi-info-circle',
             acceptClassName: 'p-button-danger',
-            acceptLabel: 'Sí, Eliminar',
-            rejectLabel: 'Cancelar',
             accept: async () => {
                 try {
                     await deletePost(postId);
                     showToast('success', 'Éxito', 'Post eliminado correctamente.');
                     navigate('/');
                 } catch (err) {
-                    console.error("Error al eliminar post:", err);
                     showToast('error', 'Error', 'No se pudo eliminar el post.');
                 }
             },
@@ -60,17 +59,9 @@ const PostDetailPage = () => {
         });
     };
 
-    if (loading) {
-        return <div className="flex justify-content-center p-5"><ProgressSpinner /></div>;
-    }
-
-    if (error) {
-        return <Message severity="error" text={error} />;
-    }
-
-    if (!post) {
-        return <p>Post no encontrado.</p>;
-    }
+    if (loading) return <div className="flex justify-content-center p-5"><ProgressSpinner /></div>;
+    if (error) return <Message severity="error" text={error} />;
+    if (!post) return <p>Post no encontrado.</p>;
 
     const canModify = user && (user.role === 'admin' || user.sub == post.autor_id);
 
@@ -81,7 +72,7 @@ const PostDetailPage = () => {
             </Link>
             {canModify && (
                 <div className="flex gap-2">
-                    <Link to={`/posts/${postId}/edit`}> 
+                    <Link to={`/posts/${postId}/edit`}>
                         <Button label="Editar" icon="pi pi-pencil" className="p-button-secondary p-button-sm" />
                     </Link>
                     <Button 
@@ -96,14 +87,20 @@ const PostDetailPage = () => {
     );
 
     return (
-        <Card 
-            title={post.titulo} 
-            subTitle={`Por: ${post.autor_id} - Fecha: ${new Date(post.fecha_creacion).toLocaleDateString()}`}
-            footer={footer}
-            className="w-full max-w-4xl m-auto"
-        >
-            <div dangerouslySetInnerHTML={{ __html: post.contenido }} />
-        </Card>
+        <div className="w-full max-w-4xl m-auto pb-6">
+            {/* Tarjeta del Post */}
+            <Card 
+                title={post.titulo} 
+                subTitle={`Por: ${post.autor_nombre} - Fecha: ${new Date(post.fecha_creacion).toLocaleDateString()}`}
+                footer={footer}
+                className="mb-4"
+            >
+                <div dangerouslySetInnerHTML={{ __html: post.contenido }} />
+            </Card>
+
+            {/* comentarios al final de posts */}
+            <CommentsSection postId={postId} />
+        </div>
     );
 };
 

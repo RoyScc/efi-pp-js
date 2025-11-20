@@ -1,20 +1,14 @@
 import axios from 'axios';
 
-
 const API_URL = 'http://localhost:5000/api';
 
-//  instancia de Axios
 const api = axios.create({
     baseURL: API_URL
 });
 
-
 api.interceptors.request.use(
     (config) => {
-        // Obtenemos el token de localStorage
         const token = localStorage.getItem('token');
-        
-        // Si el token existe, lo añadimos 
         if (token) {
             config.headers['Authorization'] = `Bearer ${token}`;
         }
@@ -25,36 +19,20 @@ api.interceptors.request.use(
     }
 );
 
-// --- Funciones de API para Posts ---
+// --- Posts ---
+export const getPosts = () => api.get('/posts');
+export const getPost = (id) => api.get(`/posts/${id}`);
+export const createPost = (postData) => api.post('/posts', postData);
+export const updatePost = (id, postData) => api.put(`/posts/${id}`, postData);
+export const deletePost = (id) => api.delete(`/posts/${id}`);
 
-// GET /api/posts
-export const getPosts = () => {
-    // El interceptor añadirá el token automáticamente
-    return api.get('/posts');
-};
+// --- Categorías ---
+export const getCategories = () => api.get('/categories');
 
-// GET /api/posts/<id>
-export const getPost = (id) => {
-    return api.get(`/posts/${id}`);
-};
-
-// POST /api/posts
-export const createPost = (postData) => {
-    return api.post('/posts', postData);
-};
-
-// PUT /api/posts/<id>
-export const updatePost = (id, postData) => {
-    return api.put(`/posts/${id}`, postData);
-};
-
-// DELETE /api/posts/<id>
-export const deletePost = (id) => {
-    return api.delete(`/posts/${id}`);
-};
-
-export const getCategories = () => {
-    return api.get('/categories');
-};
+// --- Comentarios ---
+export const getComments = (postId) => api.get(`/posts/${postId}/comments`);
+export const createComment = (postId, data) => api.post(`/posts/${postId}/comments`, data);
+export const deleteComment = (commentId) => api.delete(`/comments/${commentId}`);
+export const updateComment = (commentId, data) => api.put(`/comments/${commentId}`, data);
 
 export default api;

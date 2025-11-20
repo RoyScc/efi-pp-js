@@ -3,34 +3,34 @@ import { Outlet, Link } from 'react-router-dom';
 import { useAuth } from '../context/authlogin.jsx';
 import { Menubar } from 'primereact/menubar';
 import { Button } from 'primereact/button';
-import { useToast } from '../context/toast.jsx';
-import { useNavigate } from 'react-router-dom';
+import { ConfirmDialog } from 'primereact/confirmdialog';
 
-const MainLayout = () => {
+const NavBar = () => {
     const { user, logout } = useAuth();
-    const { showToast } = useToast();
-    const navigate = useNavigate();
 
-    const items = [
+    let items = [
         {
             label: 'Home (Posts)',
             icon: 'pi pi-fw pi-home',
-            command: () => { navigate('/') }
-        },
-        {
-            label: 'Crear Post',
-            icon: 'pi pi-fw pi-plus',
-            command: () => { navigate('/posts/new') }
+            command: () => { window.location.href = '/' } 
         }
     ];
 
+    if (user) {
+        items.push({
+            label: 'Crear Post',
+            icon: 'pi pi-fw pi-plus',
+            command: () => { window.location.href = '/posts/new' }
+        });
+    }
+
     const end = user ? (
         <div className="flex align-items-center gap-2">
-            <span className="bg-primary p-2 p-mr-2">¡Hola, {user.email}</span>
+            <span className="p-mr-2">¡Hola, {user.username}!</span>
             <Button 
                 label="Cerrar Sesión" 
                 icon="pi pi-sign-out" 
-                className="bg-red-500 p-button-text p-button-sm" 
+                className="p-button-text p-button-sm" 
                 onClick={logout} 
             />
         </div>
@@ -42,13 +42,13 @@ const MainLayout = () => {
 
     return (
         <div>
+            <ConfirmDialog /> 
             <Menubar model={items} end={end} />
-            
             <div className="p-4">
-                <Outlet />
+                <Outlet /> 
             </div>
         </div>
     );
 };
 
-export default MainLayout;
+export default NavBar;
